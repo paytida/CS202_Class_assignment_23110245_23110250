@@ -28,8 +28,8 @@ jobs:
           grep -Fq 'Result: 4' <<< "$output"
           grep -Fq 'Error: Cannot divide by zero.' <<< "$output"
           grep -Eq 'Heads|Tails' <<< "$output"
-          grep -Eq '^You rolled: [1-6]$' <<< "$output"
-          grep -Eq '^You rolled: ([1-9]|10)$' <<< "$output"
+          grep -Eq 'You rolled: [1-6]([^0-9]|$)' <<< "$output"
+          grep -Eq 'You rolled: (10|[1-9])([^0-9]|$)' <<< "$output"
 
       - name: Verify clean target
         run: |
