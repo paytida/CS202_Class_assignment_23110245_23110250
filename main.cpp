@@ -1,71 +1,111 @@
-#include <iostream>
-#include "mathfuncs.h"
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include <limits>
+
+#include "mathfuncs.h"
 #include "randfuncs.h"
 
-using namespace std;
+namespace {
+
+void clearInvalidInput() {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+void runArithmeticOperation() {
+    double firstNumber;
+    double secondNumber;
+    char operation;
+
+    std::cout << "Enter first number: ";
+    if (!(std::cin >> firstNumber)) {
+        if (!std::cin.eof()) {
+            clearInvalidInput();
+            std::cout << "Invalid number.\n";
+        }
+        return;
+    }
+
+    std::cout << "Enter operation (+, -, *, /): ";
+    if (!(std::cin >> operation)) {
+        return;
+    }
+
+    std::cout << "Enter second number: ";
+    if (!(std::cin >> secondNumber)) {
+        if (!std::cin.eof()) {
+            clearInvalidInput();
+            std::cout << "Invalid number.\n";
+        }
+        return;
+    }
+
+    switch (operation) {
+        case '+':
+            std::cout << "Result: " << add(firstNumber, secondNumber) << '\n';
+            break;
+        case '-':
+            std::cout << "Result: " << subtract(firstNumber, secondNumber) << '\n';
+            break;
+        case '*':
+            std::cout << "Result: " << multiply(firstNumber, secondNumber) << '\n';
+            break;
+        case '/':
+            if (secondNumber == 0) {
+                std::cout << "Error: Cannot divide by zero.\n";
+            } else {
+                std::cout << "Result: " << divide(firstNumber, secondNumber) << '\n';
+            }
+            break;
+        default:
+            std::cout << "Invalid operation.\n";
+    }
+}
+
+}  // namespace
 
 int main() {
-    double a, b;
-    char op;
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    cout << "Enter first number: ";
-    cin >> a;
+    while (true) {
+        int choice;
 
-    cout << "Enter operation (+, -, *, /): ";
-    cin >> op;
-    srand(time(0));
+        std::cout << "\nCalculator and Random Generator\n"
+                  << "1. Arithmetic operation\n"
+                  << "2. Flip coin\n"
+                  << "3. Roll 6-sided die\n"
+                  << "4. Roll 10-sided die\n"
+                  << "0. Exit\n"
+                  << "Enter your choice: ";
 
-    int choice;
+        if (!(std::cin >> choice)) {
+            if (std::cin.eof()) {
+                break;
+            }
+            clearInvalidInput();
+            std::cout << "Invalid choice.\n";
+            continue;
+        }
 
-    switch (op) {
-        case '+':
-            cout << "Result: " << add(a, b) << endl;
-            break;
-
-        case '-':
-            cout << "Result: " << subtract(a, b) << endl;
-            break;
-
-        case '*':
-            cout << "Result: " << multiply(a, b) << endl;
-            break;
-
-        case '/':
-            if (b == 0)
-                cout << "Error: Cannot divide by zero." << endl;
-            else
-                cout << "Result: " << divide(a, b) << endl;
-            break;
-
-        default:
-            cout << "Invalid operation." << endl;
-    cout << "Random Generator\n";
-    cout << "1. Flip Coin\n";
-    cout << "2. Roll 6-sided Die\n";
-    cout << "3. Roll 10-sided Die\n";
-    cout << "Enter your choice: ";
-    cin >> choice;
-
-    switch (choice) {
-        case 1:
-            if (flipCoin() == 0)
-                cout << "Heads\n";
-            else
-                cout << "Tails\n";
-            break;
-
-        case 2:
-            cout << "You rolled: " << rollSixSidedDie() << "\n";
-            break;
-
-        case 3:
-            cout << "You rolled: " << rollTenSidedDie() << "\n";
-            break;
-
-        default:
-            cout << "Invalid choice\n";
+        switch (choice) {
+            case 0:
+                return 0;
+            case 1:
+                runArithmeticOperation();
+                break;
+            case 2:
+                std::cout << (flipCoin() == 0 ? "Heads\n" : "Tails\n");
+                break;
+            case 3:
+                std::cout << "You rolled: " << rollSixSidedDie() << '\n';
+                break;
+            case 4:
+                std::cout << "You rolled: " << rollTenSidedDie() << '\n';
+                break;
+            default:
+                std::cout << "Invalid choice.\n";
+        }
     }
 
     return 0;

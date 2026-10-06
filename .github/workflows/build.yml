@@ -1,0 +1,40 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build and smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build project
+        run: make all
+
+      - name: Test calculator and random features
+        shell: bash
+        run: |
+          output="$(printf '1\n8\n+\n2\n1\n8\n-\n2\n1\n8\n*\n2\n1\n8\n/\n2\n1\n8\n/\n0\n2\n3\n4\n0\n' | ./program)"
+          printf '%s\n' "$output"
+          grep -Fq 'Result: 10' <<< "$output"
+          grep -Fq 'Result: 6' <<< "$output"
+          grep -Fq 'Result: 16' <<< "$output"
+          grep -Fq 'Result: 4' <<< "$output"
+          grep -Fq 'Error: Cannot divide by zero.' <<< "$output"
+          grep -Eq 'Heads|Tails' <<< "$output"
+          grep -Eq '^You rolled: [1-6]$' <<< "$output"
+          grep -Eq '^You rolled: ([1-9]|10)$' <<< "$output"
+
+      - name: Verify clean target
+        run: |
+          make clean
+          test ! -e program
+          test ! -e main.o
+          test ! -e mathfuncs.o
+          test ! -e randfuncs.o
